@@ -1,9 +1,17 @@
 from torch.utils.data import Dataset
 
 class FairFaceDataset(Dataset):
-    def __init__(self, dataset, transform=None):
+    def __init__(
+        self,
+        dataset,
+        transforms=None,
+        age_transforms=None
+    ):
         self.dataset = dataset
-        self.transform = transform
+        self.transforms = transforms
+        self.age_transforms = age_transforms
+
+
 
     def __len__(self):
         return len(self.dataset)
@@ -17,8 +25,11 @@ class FairFaceDataset(Dataset):
         age = sample['age']
         race = sample['race']
 
-        if self.transform:
-            image = self.transform(image)
+        if age in [0,7,8] and self.age_transforms is not None:
+            image = self.age_transforms(image)
+
+        elif self.transforms is not None:
+            image = self.transforms(image)
 
         return image,{
             'gender': gender,

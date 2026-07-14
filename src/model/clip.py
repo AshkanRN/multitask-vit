@@ -1,4 +1,4 @@
-from transformers import AutoProcessor, AutoModel
+from transformers import CLIPProcessor, CLIPVisionModel
 
-processor = AutoProcessor.from_pretrained("../models/clip-vit-base-patch16")
-model = AutoModel.from_pretrained("../models/clip-vit-base-patch16")
+processor = CLIPProcessor.from_pretrained("../models/clip-vit-base-patch16")
+model = CLIPVisionModel.from_pretrained("../models/clip-vit-base-patch16")
