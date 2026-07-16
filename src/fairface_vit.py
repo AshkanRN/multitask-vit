@@ -40,4 +40,8 @@ class FairFaceViT(nn.Module):
         age_logits    = self.age(features)
         race_logits   = self.race(features)
 
-        return gender_logits, age_logits, race_logits
+        return  { 
+            "gender": gender_logits, 
+            "age":    age_logits, 
+            "race":   race_logits
+        }
