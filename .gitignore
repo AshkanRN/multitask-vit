@@ -12,3 +12,7 @@ checkpoints/
 .idea/
 
 src/test.ipynb
+
+wandb/
+
+req.txt

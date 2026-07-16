@@ -2,7 +2,7 @@ from torch import nn
 
 
 class FairFaceViT(nn.Module):
-    def __init__(self, model):
+    def __init__(self, model, dropout=0.15, age_hidden_dim=384):
         super().__init__()
 
         self.backbone = model
@@ -24,10 +24,10 @@ class FairFaceViT(nn.Module):
         self.gender = nn.Linear(hidden_dim, 1)
             
         self.age = nn.Sequential(
-            nn.Linear(768,384),
+            nn.Linear(hidden_dim, age_hidden_dim),
             nn.GELU(),
-            nn.Dropout(0.15),
-            nn.Linear(384,9)
+            nn.Dropout(dropout),
+            nn.Linear(age_hidden_dim, 9)
         )
         self.race = nn.Linear(hidden_dim, 7)
         
