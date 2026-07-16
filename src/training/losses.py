@@ -1,4 +1,20 @@
+import torch
 import torch.nn as nn
+import numpy as np
+
+from sklearn.utils.class_weight import compute_class_weight
+
+
+# for weighted CrossEntropyLoss
+def get_age_weights(age_labels, num_classes, device='cpu'):
+    classes = np.arange(num_classes)
+    weights = compute_class_weight(
+        'balanced', 
+        classes=classes, 
+        y=age_labels
+    )
+    return torch.tensor(weights, dtype=torch.float32).to(device)
+
 
 def get_loss_function(age_weights=None):
     return {
