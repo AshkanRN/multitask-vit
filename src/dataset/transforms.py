@@ -15,12 +15,12 @@ def get_train_transform(processor):
     return v2.Compose([
         v2.RandomHorizontalFlip(p=0.5),
 
-        v2.RandomRotation(5, fill=(128, 128, 128)),
+        v2.RandomRotation(8, fill=(128, 128, 128)),
 
         v2.ColorJitter(
-            brightness=0.15,
-            contrast=0.15,
-            saturation=0.10,
+            brightness=0.1,
+            contrast=0.1,
+            saturation=0.1,
             hue=0.02,
         ),
 
@@ -29,14 +29,20 @@ def get_train_transform(processor):
 
 def get_age_transform(processor):
     return v2.Compose([
-        v2.RandomHorizontalFlip(p=0.7),
+        v2.RandomHorizontalFlip(p=0.5),
 
-        v2.RandomRotation(5, fill=(128, 128, 128)),
+        v2.RandomRotation(10, fill=(128, 128, 128)),
+
+        # v2.RandomResizedCrop(
+        #     (224, 224),
+        #     scale=(0.9, 1.0),
+        #     ratio=(0.95, 1.05)
+        # ),
 
         v2.ColorJitter(
-            brightness=0.20,
-            contrast=0.20,
-            saturation=0.15,
+            brightness=0.15,
+            contrast=0.15,
+            saturation=0.10,
             hue=0.03,
         ),
 
