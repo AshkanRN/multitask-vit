@@ -10,8 +10,11 @@ src/dataset/fairface/
 .vscode/
 .idea/
 
+
+
 src/test.ipynb
 src/resume_training2.ipynb
+src/main_debug.py
 
 wandb/
 
