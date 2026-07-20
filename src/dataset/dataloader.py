@@ -22,13 +22,13 @@ def get_dataset(train_transform=None, age_transform=None, val_transform=None):
 
 
 
-def get_dataloaders(train_dataset, val_dataset, batch_size=32, num_workers=4):
+def get_dataloaders(train_dataset, val_dataset, batch_size=32, num_workers=0):
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=True
+        pin_memory=False
     )
 
 

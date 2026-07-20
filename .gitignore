@@ -5,14 +5,27 @@ temp/
 models/
 src/dataset/fairface/
 
-checkpoints/
 .ipynb_checkpoints/
 
 .vscode/
 .idea/
 
 src/test.ipynb
+src/resume_training2.ipynb
 
 wandb/
 
-req.txt
+
+test-images/
+
+# Ignore checkpoint contents
+checkpoints/*/v*/*
+
+# Allow version folders
+!checkpoints/*/
+!checkpoints/*/v*/
+
+# Keep only trained heads
+!checkpoints/*/v*/*-best-heads.pt
+!checkpoints/*/v*/best-heads*.pt
+!checkpoints/*/v*/notes.txt

@@ -50,7 +50,7 @@ def compute_overall_metrics(tracker):
         }
 
 
-    # cals MSE, RMSE and MAE only for age
+    # calc MSE, RMSE and MAE only for age
 
     age_predictions = tracker['preds']['age']
     age_targets     = tracker['targets']['age']

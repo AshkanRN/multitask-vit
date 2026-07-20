@@ -7,17 +7,17 @@ class FairFaceViT(nn.Module):
 
         self.backbone = model
 
-        print('backbone: ',self.backbone,"\n")
-        print('backbone parameters: ',self.backbone.parameters(),"\n")
+        # print('backbone: ',self.backbone,"\n")
+        # print('backbone parameters: ',self.backbone.parameters(),"\n")
 
-        print("start freezing the backbone parameters...\n")
+        # print("start freezing the backbone parameters...\n")
 
         # Freeze the backbone parameters
         for param in self.backbone.parameters():
-            print(param)
+            # print(param)
             param.requires_grad = False
 
-        print("finished freezing the backbone parameters...\n")
+        # print("finished freezing the backbone parameters...\n")
 
         hidden_dim = 768
 
