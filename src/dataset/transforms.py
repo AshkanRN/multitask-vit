@@ -24,6 +24,16 @@ def get_train_transform(processor):
             hue=0.02,
         ),
 
+        v2.RandomApply(
+            [
+                v2.GaussianBlur(
+                    kernel_size=3,
+                    sigma=(0.1,0.5)
+                )
+            ],
+            p=0.1
+        ),
+
         *base_transform(processor)
     ])
 
@@ -31,7 +41,7 @@ def get_age_transform(processor):
     return v2.Compose([
         v2.RandomHorizontalFlip(p=0.5),
 
-        v2.RandomRotation(10, fill=(128, 128, 128)),
+        v2.RandomRotation(8, fill=(128, 128, 128)),
 
         # v2.RandomResizedCrop(
         #     (224, 224),
