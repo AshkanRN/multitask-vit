@@ -1,5 +1,7 @@
 import torch
 from tqdm.auto import tqdm 
+# from torch.cuda.amp import autocast
+from torch.amp import autocast
 
 from .losses import compute_losses
 from .metrics import (init_tracker, update_tracker,
@@ -8,7 +10,7 @@ from .metrics import (init_tracker, update_tracker,
 tasks = ["gender", "age", "race"]
 
 def train_loop(dataloader, model, loss_funcs, loss_weights,
-                optimizer, device, epoch, epochs):
+                optimizer, device, epoch, epochs, scaler):
     size = len(dataloader.dataset)
 
     model.train()
@@ -28,13 +30,23 @@ def train_loop(dataloader, model, loss_funcs, loss_weights,
         
         batch_size = X.size(0)
 
-        pred = model(X)
+        # pred = model(X)
 
-        total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+        # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+
+        # optimizer.zero_grad()
+        # total_loss.backward()
+        # optimizer.step()
 
         optimizer.zero_grad()
-        total_loss.backward()
-        optimizer.step()
+
+        with autocast("cuda", dtype=torch.float16, enabled=torch.cuda.is_available()):
+            pred = model(X)
+            total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+
+        scaler.scale(total_loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
 
         update_tracker(tracker, pred, Y)
         running_loss  += total_loss.item() * batch_size
@@ -87,8 +99,12 @@ def test_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, epochs
             Y = {key: value.to(device) for key, value in Y.items()}
             batch_size = X.size(0)
 
-            pred = model(X)
-            total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+            # pred = model(X)
+            # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+            
+            with autocast("cuda", dtype=torch.float16, enabled=torch.cuda.is_available()):
+                pred = model(X)
+                total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
 
             running_loss += total_loss.item() * batch_size
 
