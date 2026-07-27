@@ -3,6 +3,7 @@ import torch
 
 def base_transform(processor):
     return [
+        v2.Resize((224,224)),
         v2.ToImage(),
         v2.ToDtype(torch.float32, scale=True),
         v2.Normalize(
@@ -42,12 +43,6 @@ def get_age_transform(processor):
         v2.RandomHorizontalFlip(p=0.5),
 
         v2.RandomRotation(8, fill=(128, 128, 128)),
-
-        # v2.RandomResizedCrop(
-        #     (224, 224),
-        #     scale=(0.9, 1.0),
-        #     ratio=(0.95, 1.05)
-        # ),
 
         v2.ColorJitter(
             brightness=0.15,

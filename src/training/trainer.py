@@ -1,6 +1,5 @@
 import torch
 from tqdm.auto import tqdm 
-# from torch.cuda.amp import autocast
 from torch.amp import autocast
 
 from .losses import compute_losses
@@ -81,7 +80,7 @@ def train_loop(dataloader, model, loss_funcs, loss_weights,
 
 
 
-def test_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, epochs):
+def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, epochs,use_amp=True):
     model.eval()
 
     running_loss  = 0.0
@@ -102,7 +101,7 @@ def test_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, epochs
             # pred = model(X)
             # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
             
-            with autocast("cuda", dtype=torch.float16, enabled=torch.cuda.is_available()):
+            with autocast("cuda", dtype=torch.float16, enabled=(torch.cuda.is_available() and use_amp)):
                 pred = model(X)
                 total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
 

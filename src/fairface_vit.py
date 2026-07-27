@@ -36,6 +36,7 @@ class FairFaceViT(nn.Module):
 
         features = outputs.pooler_output
 
+
         gender_logits = self.gender(features)
         age_logits    = self.age(features)
         race_logits   = self.race(features)

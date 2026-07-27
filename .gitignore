@@ -9,17 +9,27 @@ src/dataset/fairface/
 
 .vscode/
 .idea/
-
-
+temp/
 
 src/test.ipynb
 src/resume_training2.ipynb
 src/main_debug.py
+src/main_debug_2.py
+src/main_debug_3.py
+src/wandb.ipynb
+src/predictions.csv
+src/diag.py
+
+
+figures/
 
 wandb/
 
 
 test-images/
+doc/
+
+
 
 # Ignore checkpoint contents
 checkpoints/*/v*/*
