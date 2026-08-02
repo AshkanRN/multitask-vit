@@ -9,7 +9,7 @@ from .metrics import (init_tracker, update_tracker,
 tasks = ["gender", "age", "race"]
 
 def train_loop(dataloader, model, loss_funcs, loss_weights,
-                optimizer, device, epoch, epochs, scaler):
+                optimizer, device, epoch, epochs, scaler, age_loss_type="ce"):
     size = len(dataloader.dataset)
 
     model.train()
@@ -41,13 +41,16 @@ def train_loop(dataloader, model, loss_funcs, loss_weights,
 
         with autocast("cuda", dtype=torch.float16, enabled=torch.cuda.is_available()):
             pred = model(X)
-            total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+            # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+            total_loss, task_losses = compute_losses(
+                pred, Y, loss_funcs, age_loss_type=age_loss_type, loss_weights=loss_weights
+            )
 
         scaler.scale(total_loss).backward()
         scaler.step(optimizer)
         scaler.update()
 
-        update_tracker(tracker, pred, Y)
+        update_tracker(tracker, pred, Y, age_loss_type=age_loss_type)
         running_loss  += total_loss.item() * batch_size
 
         for task in tasks:
@@ -80,7 +83,7 @@ def train_loop(dataloader, model, loss_funcs, loss_weights,
 
 
 
-def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, epochs,use_amp=True):
+def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, epochs,use_amp=True, age_loss_type="ce"):
     model.eval()
 
     running_loss  = 0.0
@@ -103,7 +106,10 @@ def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, ep
             
             with autocast("cuda", dtype=torch.float16, enabled=(torch.cuda.is_available() and use_amp)):
                 pred = model(X)
-                total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+                # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+                total_loss, task_losses = compute_losses(
+                    pred, Y, loss_funcs, age_loss_type=age_loss_type, loss_weights=loss_weights
+                )
 
             running_loss += total_loss.item() * batch_size
 
@@ -112,7 +118,7 @@ def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, ep
 
             total_samples += batch_size
 
-            update_tracker(tracker, pred, Y)
+            update_tracker(tracker, pred, Y, age_loss_type=age_loss_type)
 
             progress_bar.set_postfix({
                 "loss": f"{total_loss.item():.4f}"

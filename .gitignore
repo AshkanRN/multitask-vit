@@ -31,14 +31,16 @@ doc/
 
 
 
-# Ignore checkpoint contents
-checkpoints/*/v*/*
+# Ignore everything under checkpoints
+checkpoints/**
 
-# Allow version folders
+# Allow model folders
 !checkpoints/*/
+
+# Allow only version folders starting with v
 !checkpoints/*/v*/
 
-# Keep only trained heads
+# Keep only selected files
 !checkpoints/*/v*/*-best-heads.pt
 !checkpoints/*/v*/best-heads*.pt
 !checkpoints/*/v*/notes.txt

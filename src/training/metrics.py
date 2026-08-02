@@ -4,6 +4,7 @@ import math
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score,
     mean_squared_error, mean_absolute_error)
 
+from .losses import corn_label_from_logits
 
 tasks = ['gender', 'age', 'race']
 
@@ -14,9 +15,14 @@ def init_tracker():
     }
 
 
-def update_tracker(tracker, pred, target):
+def update_tracker(tracker, pred, target, age_loss_type="ce"):
     gender_preds = (torch.sigmoid(pred["gender"].squeeze(1)) > 0.5).long()
-    age_preds    = pred["age"].argmax(dim=1)
+    # age_preds    = pred["age"].argmax(dim=1)
+    # age_preds    = corn_label_from_logits(pred["age"]).long()
+    if age_loss_type == "corn":
+        age_preds = corn_label_from_logits(pred["age"]).long()
+    else:
+        age_preds = pred["age"].argmax(dim=1)
     race_preds   = pred["race"].argmax(dim=1)
  
     tracker["preds"]["gender"].extend(gender_preds.cpu().tolist())
