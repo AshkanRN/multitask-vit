@@ -1,3 +1,5 @@
+# trainer.py:
+
 import torch
 from tqdm.auto import tqdm 
 from torch.amp import autocast
@@ -9,8 +11,8 @@ from .metrics import (init_tracker, update_tracker,
 tasks = ["gender", "age", "race"]
 
 def train_loop(dataloader, model, loss_funcs, loss_weights,
-                optimizer, device, epoch, epochs, scaler, age_loss_type="ce"):
-    size = len(dataloader.dataset)
+                optimizer, device, epoch, epochs, scaler):
+    age_strategy = loss_funcs["age_strategy"]
 
     model.train()
 
@@ -19,7 +21,6 @@ def train_loop(dataloader, model, loss_funcs, loss_weights,
     running_task_losses = {task: 0.0 for task in tasks}
 
     tracker = init_tracker()
-    # print("\n----------TRAIN----------")
     progress_bar = tqdm(dataloader, desc=f"Train Epoch {epoch}/{epochs}", leave=False)
 
     for batch, (X, Y) in enumerate(progress_bar):
@@ -29,28 +30,20 @@ def train_loop(dataloader, model, loss_funcs, loss_weights,
         
         batch_size = X.size(0)
 
-        # pred = model(X)
-
-        # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
-
-        # optimizer.zero_grad()
-        # total_loss.backward()
-        # optimizer.step()
-
+    
         optimizer.zero_grad()
 
         with autocast("cuda", dtype=torch.float16, enabled=torch.cuda.is_available()):
             pred = model(X)
-            # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
             total_loss, task_losses = compute_losses(
-                pred, Y, loss_funcs, age_loss_type=age_loss_type, loss_weights=loss_weights
+                pred, Y, loss_funcs, loss_weights=loss_weights
             )
 
         scaler.scale(total_loss).backward()
         scaler.step(optimizer)
         scaler.update()
 
-        update_tracker(tracker, pred, Y, age_loss_type=age_loss_type)
+        update_tracker(tracker, pred, Y, age_strategy)
         running_loss  += total_loss.item() * batch_size
 
         for task in tasks:
@@ -83,7 +76,10 @@ def train_loop(dataloader, model, loss_funcs, loss_weights,
 
 
 
-def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, epochs,use_amp=True, age_loss_type="ce"):
+def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, epochs,use_amp=True):
+
+    age_strategy = loss_funcs["age_strategy"]
+
     model.eval()
 
     running_loss  = 0.0
@@ -94,21 +90,18 @@ def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, ep
     tracker = init_tracker()
     progress_bar = tqdm(dataloader, desc=f"validation Epoch {epoch}/{epochs}", leave=False)
 
-    # print("\n----------TEST----------")
     with torch.no_grad():
         for batch, (X,Y) in enumerate(progress_bar):
             X = X.to(device)
             Y = {key: value.to(device) for key, value in Y.items()}
             batch_size = X.size(0)
 
-            # pred = model(X)
-            # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
             
             with autocast("cuda", dtype=torch.float16, enabled=(torch.cuda.is_available() and use_amp)):
                 pred = model(X)
-                # total_loss, task_losses = compute_losses(pred, Y, loss_funcs, loss_weights=loss_weights)
+
                 total_loss, task_losses = compute_losses(
-                    pred, Y, loss_funcs, age_loss_type=age_loss_type, loss_weights=loss_weights
+                    pred, Y, loss_funcs, loss_weights=loss_weights
                 )
 
             running_loss += total_loss.item() * batch_size
@@ -118,7 +111,7 @@ def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, ep
 
             total_samples += batch_size
 
-            update_tracker(tracker, pred, Y, age_loss_type=age_loss_type)
+            update_tracker(tracker, pred, Y, age_strategy)
 
             progress_bar.set_postfix({
                 "loss": f"{total_loss.item():.4f}"
@@ -127,9 +120,9 @@ def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, ep
 
     avg_loss = running_loss / total_samples
     avg_task_losses = {k: v / total_samples for k, v in running_task_losses.items()}
-
     overall = compute_overall_metrics(tracker)
     subgroups_accuracy = compute_subgroup_metric(tracker)
+    
     print("-VALIDATION")
     print(f" avg loss: {avg_loss:.4f}")
     
