@@ -1,6 +1,6 @@
 # configs/run_configs.py
 from dataclasses import dataclass, field, replace
-# from configs.adapter_config import AdapterConfig
+from configs.adapter_config import AdapterConfig
 
 
 @dataclass(frozen=True)
@@ -41,7 +41,7 @@ class RunConfig:
 
     early_stopping: EarlyStoppingConfig = field(default_factory=EarlyStoppingConfig)
 
-    # adapter: AdapterConfig = field(default_factory=AdapterConfig)
+    adapter: AdapterConfig = field(default_factory=AdapterConfig)
 
 
 
@@ -57,87 +57,87 @@ RUN_CONFIGS = {
     ("dinov2", "v2"):   replace(DEFAULT, age_loss_type="ce"),
     ("siglip", "v2"):   replace(DEFAULT, age_loss_type="ce"),
 
-    # ("clip", "v3"): replace(
-    #     DEFAULT,
-    #     age_loss_type="corn",
-    #     learning_rate=2e-4,
-    #     scheduler=SchedulerConfig(
-    #         warmup_epochs=3,
-    #         cosine_eta_min=1e-6
-    #     ),
-    #     adapter=AdapterConfig(
-    #         method="lora",
-    #         r=8,
-    #         alpha=16,
-    #         dropout=0.05,
-    #         target_modules=["q_proj", "v_proj"],
-    #     ),
-    #     early_stopping = EarlyStoppingConfig(
-    #         patience=7,
-    #         min_delta=0.0005,
-    #     )
-    # ),
-    # ("clip", "v3-test"): replace(
-    #     DEFAULT,
-    #     age_loss_type="corn",
-    #     learning_rate=2e-4,
-    #     scheduler=SchedulerConfig(
-    #         warmup_epochs=3,
-    #         cosine_eta_min=1e-6
-    #     ),
-    #     adapter=AdapterConfig(
-    #         method="lora",
-    #         r=8,
-    #         alpha=16,
-    #         dropout=0.05,
-    #         target_modules=["q_proj", "v_proj"],
-    #     ),
-    #     early_stopping = EarlyStoppingConfig(
-    #         patience=7,
-    #         min_delta=0.0005,
-    #     )
-    # ),
+    ("clip", "v3"): replace(
+        DEFAULT,
+        age_loss_type="corn",
+        learning_rate=2e-4,
+        scheduler=SchedulerConfig(
+            warmup_epochs=3,
+            cosine_eta_min=1e-6
+        ),
+        adapter=AdapterConfig(
+            method="lora",
+            r=8,
+            alpha=16,
+            dropout=0.05,
+            target_modules=["q_proj", "v_proj"],
+        ),
+        early_stopping = EarlyStoppingConfig(
+            patience=7,
+            min_delta=0.0005,
+        )
+    ),
+    ("clip", "v3-test"): replace(
+        DEFAULT,
+        age_loss_type="corn",
+        learning_rate=2e-4,
+        scheduler=SchedulerConfig(
+            warmup_epochs=3,
+            cosine_eta_min=1e-6
+        ),
+        adapter=AdapterConfig(
+            method="lora",
+            r=8,
+            alpha=16,
+            dropout=0.05,
+            target_modules=["q_proj", "v_proj"],
+        ),
+        early_stopping = EarlyStoppingConfig(
+            patience=7,
+            min_delta=0.0005,
+        )
+    ),
 
-    # ("dinov2", "v3"): replace(
-    #     DEFAULT,
-    #     age_loss_type="corn",
-    #     learning_rate=2e-4,
-    #     scheduler=SchedulerConfig(
-    #         warmup_epochs=3,
-    #         cosine_eta_min=1e-6
-    #     ),
-    #     adapter=AdapterConfig(
-    #         method="lora",
-    #         r=8,
-    #         alpha=16,
-    #         dropout=0.05,
-    #         target_modules=["query", "value"],
-    #     ),
-    #     early_stopping = EarlyStoppingConfig(
-    #         patience=7,
-    #         min_delta=0.0005,
-    #     )
-    # ),
-    # ("siglip", "v3"): replace(
-    #     DEFAULT,
-    #     age_loss_type="corn",
-    #     learning_rate=2e-4,
-    #     scheduler=SchedulerConfig(
-    #         warmup_epochs=3,
-    #         cosine_eta_min=1e-6
-    #     ),
-    #     adapter=AdapterConfig(
-    #         method="lora",
-    #         r=8,
-    #         alpha=16,
-    #         dropout=0.05,
-    #         target_modules=["q_proj", "v_proj"],
-    #     ),
-    #     early_stopping = EarlyStoppingConfig(
-    #         patience=7,
-    #         min_delta=0.0005,
-    #     )
-    # ),
+    ("dinov2", "v3"): replace(
+        DEFAULT,
+        age_loss_type="corn",
+        learning_rate=2e-4,
+        scheduler=SchedulerConfig(
+            warmup_epochs=3,
+            cosine_eta_min=1e-6
+        ),
+        adapter=AdapterConfig(
+            method="lora",
+            r=8,
+            alpha=16,
+            dropout=0.05,
+            target_modules=["query", "value"],
+        ),
+        early_stopping = EarlyStoppingConfig(
+            patience=7,
+            min_delta=0.0005,
+        )
+    ),
+    ("siglip", "v3"): replace(
+        DEFAULT,
+        age_loss_type="corn",
+        learning_rate=2e-4,
+        scheduler=SchedulerConfig(
+            warmup_epochs=3,
+            cosine_eta_min=1e-6
+        ),
+        adapter=AdapterConfig(
+            method="lora",
+            r=8,
+            alpha=16,
+            dropout=0.05,
+            target_modules=["q_proj", "v_proj"],
+        ),
+        early_stopping = EarlyStoppingConfig(
+            patience=7,
+            min_delta=0.0005,
+        )
+    ),
     
 }
 
