@@ -1,8 +1,6 @@
-#checkpoint_utils.py
-
 from configs.adapter_config import AdapterConfig
 from model.adapters import apply_adapter
-from fairface_vit import FairFaceViT
+from multitask_vit import MultiTaskViT
 
 try:
     from peft import set_peft_model_state_dict
@@ -25,7 +23,7 @@ def build_model_from_checkpoint(checkpoint, raw_backbone, device="cpu"):
 
     backbone = apply_adapter(raw_backbone, adapter_cfg)
 
-    model = FairFaceViT(
+    model = MultiTaskViT(
         backbone,
         dropout=age_dropout1,
         age_hidden_dim=age_hidden_dim,

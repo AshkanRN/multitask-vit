@@ -1,5 +1,3 @@
-# trainer.py:
-
 import torch
 from tqdm.auto import tqdm 
 from torch.amp import autocast
@@ -11,7 +9,7 @@ from .metrics import (init_tracker, update_tracker,
 tasks = ["gender", "age", "race"]
 
 def train_loop(dataloader, model, loss_funcs, loss_weights,
-                optimizer, device, epoch, epochs, scaler):
+                optimizer, device, epoch, epochs, scaler=None):
     age_strategy = loss_funcs["age_strategy"]
 
     model.train()
@@ -42,6 +40,20 @@ def train_loop(dataloader, model, loss_funcs, loss_weights,
         scaler.scale(total_loss).backward()
         scaler.step(optimizer)
         scaler.update()
+
+
+        # without scaler
+        # pred = model(X)
+
+        # total_loss, task_losses = compute_losses(
+        #     pred, Y, loss_funcs, loss_weights=loss_weights
+        # )
+
+        # total_loss.backward()
+        # optimizer.step()
+
+
+
 
         update_tracker(tracker, pred, Y, age_strategy)
         running_loss  += total_loss.item() * batch_size
@@ -103,6 +115,14 @@ def evaluate_loop(dataloader, model, loss_funcs, loss_weights, device, epoch, ep
                 total_loss, task_losses = compute_losses(
                     pred, Y, loss_funcs, loss_weights=loss_weights
                 )
+
+
+            # without scaler
+            # pred = model(X)
+
+            # total_loss, task_losses = compute_losses(
+            #     pred, Y, loss_funcs, loss_weights=loss_weights
+            # )
 
             running_loss += total_loss.item() * batch_size
 

@@ -1,4 +1,3 @@
-# configs/run_configs.py
 from dataclasses import dataclass, field, replace
 from configs.adapter_config import AdapterConfig
 
@@ -32,15 +31,13 @@ class RunConfig:
     learning_rate: float = 1e-4
     weight_decay: float = 1e-2
 
-    # warmup_epochs: int = 2
-
     age_dropout1: float = 0.15
     age_hidden_dim: int = 384
 
+    backbone_fp32: bool = False
+
     scheduler: SchedulerConfig = field(default_factory=SchedulerConfig)
-
     early_stopping: EarlyStoppingConfig = field(default_factory=EarlyStoppingConfig)
-
     adapter: AdapterConfig = field(default_factory=AdapterConfig)
 
 
@@ -48,8 +45,8 @@ class RunConfig:
 DEFAULT = RunConfig()
 
 
-# Single source of truth for every (model_name, run_version) you train.
-# Add one entry here when you start a new run — nowhere else.
+# Single source of truth for every (model_name, run_version) train.
+# Add one entry here when you start a new run
 RUN_CONFIGS = {
     ("clip",   "v1"):   replace(DEFAULT, age_loss_type="ce"),
     ("clip",   "v2"):   replace(DEFAULT, age_loss_type="ce"),
@@ -102,6 +99,7 @@ RUN_CONFIGS = {
         DEFAULT,
         age_loss_type="corn",
         learning_rate=2e-4,
+        backbone_fp32=True,
         scheduler=SchedulerConfig(
             warmup_epochs=3,
             cosine_eta_min=1e-6

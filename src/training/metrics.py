@@ -9,7 +9,6 @@ from sklearn.metrics import (
     mean_squared_error, 
     mean_absolute_error
 )
-# from .age_strategy import age_strategy
 
 
 tasks = ['gender', 'age', 'race']

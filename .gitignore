@@ -19,9 +19,9 @@ src/main_debug_3.py
 src/wandb.ipynb
 src/predictions.csv
 src/diag.py
+src/fairface_realtime_webcam.ipynb
+src/debug.py
 
-
-figures/
 
 wandb/
 
@@ -29,7 +29,7 @@ wandb/
 test-images/
 doc/
 
-
+# checkpoints/
 
 # Ignore everything under checkpoints
 checkpoints/**
